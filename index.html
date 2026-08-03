@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>For Appa</title>
+<meta name="description" content="A little corner of the internet built with love, just for Appa." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Figtree:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+/* =========================================================================
+   FOR APPA  ·  a love letter you can play with
+   -------------------------------------------------------------------------
+   EASY TO EDIT: look for the CONFIG block in the <script> near the bottom.
+   You can change the sessions completed, names, notes, captions there.
+   ========================================================================= */
+
+:root{
+  --parchment:#FBF6EC;
+  --parchment-2:#F4ECDA;
+  --ink:#211D33;          /* deep dusk indigo */
+  --ink-2:#171426;
+  --text:#2A2622;         /* warm near-black on parchment */
+  --text-soft:#6b6459;
+  --marigold:#E39A1F;
+  --glow:#FFCB6B;
+  --glow-hot:#FFE7B0;
+  --kumkum:#B23A48;
+  --leaf:#6E8B6A;
+  --leaf-deep:#4d6349;
+  --cream-card:#FFFDF7;
+  --line:#e4dcc9;
+  --shadow:0 20px 50px -24px rgba(45,35,20,.45);
+  --radius:20px;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Figtree",system-ui,sans-serif;
+  color:var(--text);
+  background:var(--parchment);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-weight:500;line-height:1.05;margin:0}
+p{margin:0}
+a{color:inherit}
+.eyebrow{
+  font-family:"Space Mono",monospace;
+  font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--marigold);
+}
+.mono{font-family:"Space Mono",monospace}
+
+/* cursor petal canvas */
+#petals{position:fixed;inset:0;pointer-events:none;z-index:60;}
+
+/* ---------- shared section frame ---------- */
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+section{position:relative}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* =====================  EVENING (hero + lamps)  ===================== */
+.evening{
+  background:
+    radial-gradient(120% 90% at 50% -10%, #33305a 0%, #262247 34%, var(--ink) 62%, var(--ink-2) 100%);
+  color:#f6efe2;
+  position:relative;overflow:hidden;
+}
+.evening::after{ /* soft floor glow */
+  content:"";position:absolute;left:50%;bottom:-30%;transform:translateX(-50%);
+  width:120%;height:60%;
+  background:radial-gradient(closest-side, rgba(255,190,90,.16), transparent 70%);
+  pointer-events:none;
+}
+.stars{position:absolute;inset:0;pointer-events:none;opacity:.5}
+
+/* hero */
+.hero{min-height:100svh;display:flex;align-items:center;padding:96px 0 60px}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;width:100%}
+.hero-kicker{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.hero-kicker .dot{width:7px;height:7px;border-radius:50%;background:var(--glow);box-shadow:0 0 14px var(--glow)}
+.hero h1{
+  font-size:clamp(3.4rem,11vw,7.4rem);
+  letter-spacing:-.02em;line-height:.92;
+  color:#fdf6e8;
+}
+.hero h1 .sub{display:block;font-style:italic;font-weight:400;font-size:.34em;color:var(--glow);letter-spacing:.01em;margin-top:.35em}
+.hero-lead{margin-top:26px;font-size:1.18rem;line-height:1.6;max-width:34ch;color:#e7ddca}
+.hero-lead b{color:#fff;font-weight:600}
+.hero-status{
+  margin-top:30px;display:inline-flex;gap:26px;flex-wrap:wrap;
+  padding:16px 22px;border:1px solid rgba(255,220,160,.24);border-radius:16px;
+  background:rgba(255,255,255,.03);backdrop-filter:blur(4px);
+}
+.hero-status .n{font-family:"Fraunces";font-size:2rem;line-height:1;color:var(--glow)}
+.hero-status .l{font-family:"Space Mono";font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:#c9bfa9;margin-top:6px;display:block}
+
+.portrait{position:relative;justify-self:center;will-change:transform}
+.portrait img{
+  width:min(360px,72vw);aspect-ratio:944/1104;object-fit:cover;object-position:center 20%;
+  border-radius:200px 200px 22px 22px;
+  border:1px solid rgba(255,220,160,.35);
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.7), 0 0 0 10px rgba(255,255,255,.03);
+}
+.portrait .halo{
+  position:absolute;inset:-8% -8% 4% -8%;border-radius:50%;
+  background:radial-gradient(closest-side, rgba(255,203,107,.4), transparent 70%);
+  filter:blur(18px);z-index:-1;
+}
+.portrait .tag{
+  position:absolute;left:50%;bottom:-14px;transform:translateX(-50%) rotate(-2deg);
+  background:var(--glow);color:#4a2c00;font-weight:700;font-size:.82rem;
+  padding:7px 16px;border-radius:30px;white-space:nowrap;box-shadow:var(--shadow)
+}
+.scrollcue{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);color:#d8cdb6;font-family:"Space Mono";font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;opacity:.8;display:flex;flex-direction:column;align-items:center;gap:8px}
+.scrollcue span{display:block;width:1px;height:34px;background:linear-gradient(#d8cdb6,transparent);animation:cue 2.2s ease-in-out infinite}
+@keyframes cue{0%,100%{transform:scaleY(.4);transform-origin:top;opacity:.4}50%{transform:scaleY(1);opacity:1}}
+
+/* ---- lamp walk ---- */
+.lamps{padding:40px 0 108px}
+.lamps-head{text-align:center;max-width:44ch;margin:0 auto 12px}
+.lamps-head h2{font-size:clamp(2rem,5vw,3.2rem);color:#fbf3e3}
+.lamps-head p{margin-top:16px;color:#d9cfba;font-size:1.06rem;line-height:1.6}
+.lamp-meta{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin:26px 0 30px}
+.chip{font-family:"Space Mono";font-size:.72rem;letter-spacing:.06em;padding:9px 15px;border-radius:30px;border:1px solid rgba(255,220,160,.28);color:#f0e6d0}
+.chip b{color:var(--glow)}
+.milestone{text-align:center;color:var(--glow-hot);font-style:italic;font-family:"Fraunces";font-size:1.15rem;min-height:1.5em;margin-bottom:26px}
+
+.lampgrid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(46px,1fr));gap:14px 10px;
+  max-width:760px;margin:0 auto;padding:6px;
+}
+.lamp{
+  position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;
+  cursor:default;
+}
+.lamp .flame{
+  width:12px;height:18px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+  background:linear-gradient(#fff2c9,#ffb43c 60%,#ff7a18);
+  filter:blur(.2px);opacity:0;transform:translateY(6px) scale(.4);
+  transition:opacity .5s ease,transform .5s ease;
+  box-shadow:0 0 10px var(--glow),0 0 22px rgba(255,150,40,.7);
+}
+.lamp .diya{
+  width:34px;height:15px;border-radius:0 0 22px 22px;
+  background:linear-gradient(#6b4a2a,#3f2a16);position:relative;
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.15);
+}
+.lamp .diya::before{content:"";position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:20px;height:6px;border-radius:50%;background:#2a1c0f}
+.lamp .num{font-family:"Space Mono";font-size:.6rem;color:#8f846e;transition:color .4s}
+.lamp.lit .flame{opacity:1;transform:none;animation:flick 1.6s ease-in-out infinite}
+.lamp.lit .diya{background:linear-gradient(#8a5c30,#523620);box-shadow:0 0 20px rgba(255,170,60,.35),inset 0 2px 3px rgba(255,255,255,.25)}
+.lamp.lit .num{color:var(--glow)}
+.lamp.today{cursor:pointer}
+.lamp.today .diya{outline:2px dashed rgba(255,203,107,.6);outline-offset:4px;border-radius:0 0 22px 22px}
+.lamp.today::after{content:"tap to light today";position:absolute;top:-30px;font-family:"Space Mono";font-size:.55rem;letter-spacing:.12em;color:var(--glow);white-space:nowrap;text-transform:uppercase;animation:bob 2s ease-in-out infinite}
+.lamp.today.lit::after{content:""}
+@keyframes flick{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-1px) scale(1.06)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.lamp-actions{display:flex;justify-content:center;gap:12px;margin-top:34px;flex-wrap:wrap}
+
+/* buttons */
+.btn{
+  font-family:"Figtree";font-weight:600;font-size:.95rem;border:none;cursor:pointer;
+  padding:13px 24px;border-radius:40px;transition:transform .15s ease,box-shadow .25s ease,background .25s;
+}
+.btn:active{transform:scale(.96)}
+.btn-glow{background:linear-gradient(#ffd27a,#e7961a);color:#4a2c00;box-shadow:0 10px 26px -10px rgba(231,150,26,.8)}
+.btn-glow:hover{box-shadow:0 14px 34px -10px rgba(231,150,26,.95);transform:translateY(-2px)}
+.btn-ghost{background:transparent;border:1px solid rgba(255,220,160,.4);color:#f0e6d0}
+.btn-ghost:hover{background:rgba(255,255,255,.06)}
+.btn-solid{background:var(--ink);color:#fbf3e3}
+.btn-solid:hover{transform:translateY(-2px)}
+.btn-leaf{background:var(--leaf);color:#fff}
+.btn-line{background:transparent;border:1px solid var(--line);color:var(--text)}
+.btn-line:hover{background:var(--parchment-2)}
+
+/* =====================  DAY sections (parchment)  ===================== */
+.day{padding:100px 0}
+.section-head{max-width:50ch}
+.section-head .eyebrow{margin-bottom:14px;display:block}
+.section-head h2{font-size:clamp(2.1rem,5vw,3.3rem);letter-spacing:-.01em}
+.section-head p{margin-top:16px;color:var(--text-soft);font-size:1.08rem;line-height:1.6}
+
+/* motivate */
+.motivate{background:linear-gradient(180deg,#fff9ec,#fbf6ec)}
+.mvt-stage{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-top:40px}
+@media(max-width:820px){.mvt-stage{grid-template-columns:1fr}}
+.card-well{perspective:1400px;display:flex;justify-content:center}
+.love-card{
+  width:100%;max-width:420px;min-height:260px;border-radius:24px;position:relative;
+  background:
+    radial-gradient(120% 100% at 0% 0%, #fff 0%, #fdf3df 100%);
+  border:1px solid var(--line);box-shadow:var(--shadow);
+  padding:38px 34px;display:flex;flex-direction:column;justify-content:center;
+  transition:transform .6s cubic-bezier(.2,.8,.2,1);
+  transform-style:preserve-3d;
+}
+.love-card .quote{font-family:"Fraunces";font-size:1.5rem;line-height:1.34;color:var(--text)}
+.love-card .quote::first-letter{color:var(--kumkum)}
+.love-card .mark{position:absolute;top:18px;left:26px;font-family:"Fraunces";font-size:3rem;color:var(--marigold);opacity:.4;line-height:1}
+.love-card.flip{transform:rotateY(8deg) rotateX(3deg)}
+.mvt-side p{color:var(--text-soft);font-size:1.05rem;line-height:1.65;margin-bottom:22px}
+.mvt-count{font-family:"Space Mono";font-size:.72rem;letter-spacing:.14em;color:var(--marigold);text-transform:uppercase;margin-top:18px}
+
+/* tracker */
+.tracker{background:linear-gradient(180deg,#f3f0e3,#eef3ea)}
+.tracker-shell{margin-top:34px;background:var(--cream-card);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);overflow:hidden}
+.tracker-top{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:22px 26px;background:linear-gradient(90deg,#f0f4ec,#fbfaf3);border-bottom:1px solid var(--line)}
+.tracker-date{display:flex;align-items:center;gap:12px}
+.tracker-date input[type=date]{font-family:"Space Mono";font-size:.9rem;border:1px solid var(--line);border-radius:12px;padding:9px 12px;background:#fff;color:var(--text)}
+.tracker-nav{display:flex;gap:8px}
+.iconbtn{border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:38px;cursor:pointer;font-size:1rem;color:var(--text-soft)}
+.iconbtn:hover{background:var(--parchment-2)}
+.save-flag{font-family:"Space Mono";font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--leaf-deep)}
+
+.vitals{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:2px;background:var(--line)}
+.vital{background:#fff;padding:14px 16px}
+.vital label{display:block;font-family:"Space Mono";font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-soft);margin-bottom:7px}
+.vital input{width:100%;border:none;border-bottom:1.5px solid var(--parchment-2);font-family:"Figtree";font-size:1rem;padding:4px 2px;background:transparent;color:var(--text)}
+.vital input:focus{outline:none;border-bottom-color:var(--leaf)}
+
+.progress-line{padding:16px 26px;background:#fbfaf3;border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px}
+.progress-line .bar{flex:1;height:9px;border-radius:6px;background:var(--parchment-2);overflow:hidden}
+.progress-line .fill{height:100%;width:0;background:linear-gradient(90deg,var(--leaf),#9bb58e);transition:width .5s ease}
+.progress-line .pct{font-family:"Space Mono";font-size:.8rem;color:var(--leaf-deep);min-width:132px;text-align:right}
+
+.blocks{padding:8px 10px 20px}
+.block{border-bottom:1px dashed var(--line);padding:16px 16px}
+.block:last-child{border-bottom:none}
+.block h4{font-family:"Space Mono";font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--kumkum);margin:0 0 4px}
+.block .time{color:var(--text-soft)}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:2px 18px;margin-top:10px}
+.check{display:flex;align-items:flex-start;gap:10px;padding:7px 6px;border-radius:10px;cursor:pointer;user-select:none}
+.check:hover{background:var(--parchment)}
+.check input{position:absolute;opacity:0;width:0;height:0}
+.box{flex:0 0 auto;width:20px;height:20px;border:1.8px solid #c9bfa9;border-radius:6px;margin-top:1px;display:grid;place-items:center;transition:all .18s ease}
+.check input:checked + .box{background:var(--leaf);border-color:var(--leaf)}
+.box svg{width:12px;height:12px;stroke:#fff;stroke-width:3;fill:none;opacity:0;transform:scale(.4);transition:all .18s ease}
+.check input:checked + .box svg{opacity:1;transform:none}
+.check .lab{font-size:.94rem;line-height:1.35}
+.check .lab small{display:block;color:var(--text-soft);font-size:.76rem;font-family:"Space Mono"}
+.check input:checked ~ .lab{color:var(--text-soft);text-decoration:line-through;text-decoration-color:#cfc6b2}
+
+.tracker-notes{padding:0 26px 24px}
+.tracker-notes label{display:block;font-family:"Space Mono";font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-soft);margin:14px 0 8px}
+.tracker-notes textarea{width:100%;min-height:82px;border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-family:"Figtree";font-size:.98rem;resize:vertical;background:#fff;color:var(--text)}
+.tracker-foot{display:flex;flex-wrap:wrap;gap:10px;padding:0 26px 26px}
+
+/* family wall */
+.family{background:linear-gradient(180deg,#fbf6ec,#f7efe0)}
+.wall{columns:3 280px;column-gap:20px;margin-top:40px}
+.frame{break-inside:avoid;margin:0 0 20px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 12px 14px;box-shadow:var(--shadow);transition:transform .3s cubic-bezier(.2,.8,.2,1);will-change:transform}
+.frame img{width:100%;border-radius:9px;display:block}
+.frame figcaption{font-family:"Fraunces";font-style:italic;font-size:1.02rem;color:var(--text);padding:12px 6px 2px;line-height:1.35}
+.frame .who{font-family:"Space Mono";font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--marigold);padding:0 6px}
+
+/* notes from everyone */
+.notes-band{margin-top:30px}
+.notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px;margin-top:26px}
+.note{background:var(--cream-card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);position:relative}
+.note::before{content:"";position:absolute;top:-7px;left:24px;width:52px;height:14px;background:rgba(255,203,107,.55);border-radius:2px;transform:rotate(-3deg)}
+.note .from{font-family:"Space Mono";font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--kumkum);margin-bottom:9px}
+.note .body{font-size:1rem;line-height:1.55;color:var(--text);outline:none;border-radius:8px}
+.note .body:focus{background:var(--parchment);box-shadow:0 0 0 2px var(--glow)}
+.note .edit-hint{font-family:"Space Mono";font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-soft);opacity:0;transition:opacity .2s;margin-top:8px}
+.note:hover .edit-hint{opacity:.7}
+
+/* anya */
+.anya-card{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:30px;background:var(--ink);color:#f6efe2;border-radius:22px;overflow:hidden;box-shadow:var(--shadow)}
+@media(max-width:680px){.anya-card{grid-template-columns:1fr}}
+.anya-card img{width:100%;height:100%;object-fit:cover;min-height:230px}
+.anya-txt{padding:34px}
+.anya-txt h3{font-size:1.7rem;color:var(--glow)}
+.anya-txt p{margin-top:12px;color:#e0d6c2;line-height:1.6}
+.anya-btn{margin-top:18px}
+
+/* media (music + movies) */
+.media{background:linear-gradient(180deg,#f7efe0,#fbf6ec)}
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;margin-top:34px}
+.mcard{background:var(--cream-card);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow);transition:transform .25s ease}
+.mcard:hover{transform:translateY(-4px)}
+.mcard .k{font-family:"Space Mono";font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--marigold)}
+.mcard h4{font-family:"Fraunces";font-size:1.3rem;margin:8px 0 10px}
+.mcard ul{list-style:none;padding:0;margin:0 0 16px}
+.mcard li{font-size:.95rem;padding:4px 0;color:var(--text-soft)}
+.mcard a{display:inline-block;font-weight:600;font-size:.9rem;color:var(--kumkum);text-decoration:none;border-bottom:1.5px solid transparent;transition:border .2s}
+.mcard a:hover{border-bottom-color:var(--kumkum)}
+
+/* closing */
+.closing{background:radial-gradient(120% 90% at 50% 120%, #33305a 0%, var(--ink) 55%, var(--ink-2) 100%);color:#f6efe2;text-align:center;padding:110px 0 90px;overflow:hidden;position:relative}
+.closing h2{font-size:clamp(2.2rem,6vw,3.8rem);color:#fdf6e8;max-width:20ch;margin:0 auto}
+.closing .letter{max-width:56ch;margin:30px auto 0;color:#e3d9c5;font-size:1.12rem;line-height:1.75}
+.closing .sign{font-family:"Fraunces";font-style:italic;font-size:1.4rem;color:var(--glow);margin-top:26px}
+.love-btn-wrap{margin-top:40px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.love-count{font-family:"Space Mono";font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#c9bfa9}
+.love-count b{color:var(--glow);font-size:1rem}
+.foot{padding:26px 0 40px;text-align:center;color:#9a917e;font-family:"Space Mono";font-size:.66rem;letter-spacing:.1em;background:var(--ink-2)}
+
+/* responsive */
+@media(max-width:860px){
+  .hero-grid{grid-template-columns:1fr;gap:32px;text-align:left}
+  .portrait{order:-1}
+  .hero{min-height:auto;padding-top:120px}
+  .wall{columns:2 220px}
+}
+@media(max-width:520px){
+  .wall{columns:1}
+  .day{padding:74px 0}
+  .hero-status{gap:18px;width:100%}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+}
+
+/* print: only the tracker */
+@media print{
+  body *{visibility:hidden}
+  #tracker, #tracker *{visibility:visible}
+  #tracker{position:absolute;left:0;top:0;width:100%}
+  .tracker-foot,.tracker-nav,.iconbtn,.save-flag{display:none!important}
+  .tracker-shell{box-shadow:none;border:1px solid #999}
+}
+</style>
+</head>
+<body>
+<canvas id="petals"></canvas>
+
+<!-- ==================== EVENING: HERO ==================== -->
+<section class="evening">
+  <canvas class="stars"></canvas>
+  <div class="wrap hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="hero-kicker">
+          <span class="dot"></span>
+          <span class="eyebrow" id="todayLabel">Monday morning</span>
+        </div>
+        <h1>Appa.<span class="sub">the best of us</span></h1>
+        <p class="hero-lead">
+          You built a life where everyone leans on you. For the next few weeks, lean back.
+          <b>We have got you.</b> Every morning, every lamp, every step home.
+        </p>
+        <div class="hero-status">
+          <div><span class="n" id="heroDone">13</span><span class="l">Lamps lit</span></div>
+          <div><span class="n" id="heroLeft">22</span><span class="l">Mornings to go</span></div>
+          <div><span class="n" id="heroChemo">3</span><span class="l">Chemo left</span></div>
+        </div>
+      </div>
+      <div class="portrait" id="portrait">
+        <span class="halo"></span>
+        <img src="images/dad-nottoday.jpg" alt="Appa, sunglasses on, absolutely unbothered" />
+        <span class="tag">Not today. Never today.</span>
+      </div>
+    </div>
+  </div>
+  <div class="scrollcue">scroll<span></span></div>
+
+  <!-- ==================== LAMP WALK ==================== -->
+  <div class="wrap lamps">
+    <div class="lamps-head reveal">
+      <h2>Thirty-five lamps</h2>
+      <p>One for every morning you show up. The lit ones are already behind you. Look how far the light already reaches.</p>
+    </div>
+    <div class="lamp-meta reveal">
+      <span class="chip"><b id="chipDone">13</b> lit</span>
+      <span class="chip"><b id="chipLeft">22</b> to go</span>
+      <span class="chip"><b id="chipPct">37%</b> of the way home</span>
+    </div>
+    <p class="milestone reveal" id="milestone"></p>
+    <div class="lampgrid reveal" id="lampgrid"></div>
+    <div class="lamp-actions reveal">
+      <button class="btn btn-glow" id="markToday">Light today's lamp</button>
+      <button class="btn btn-ghost" id="undoLamp">Undo last</button>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== MOTIVATE ME ==================== -->
+<section class="day motivate" id="motivate">
+  <div class="wrap">
+    <div class="mvt-stage">
+      <div class="mvt-side reveal">
+        <span class="eyebrow">On the hard days</span>
+        <h2 style="font-size:clamp(2rem,5vw,3rem);margin-top:14px">Say something to me</h2>
+        <p>No slogans. No pretending it is easy. Just true things, from people who mean them. Press the button whenever you need one.</p>
+        <button class="btn btn-solid" id="drawBtn">Say something to me</button>
+        <div class="mvt-count" id="drawCount"></div>
+      </div>
+      <div class="card-well reveal">
+        <figure class="love-card" id="loveCard">
+          <span class="mark">&ldquo;</span>
+          <blockquote class="quote" id="quoteText">Press the button, Appa. I have a few things to tell you.</blockquote>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== DAILY TRACKER ==================== -->
+<section class="day tracker" id="tracker">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">The daily rhythm</span>
+      <h2>Today, ticked off</h2>
+      <p>The same checklist as the printed one, but it remembers. Tick things as they happen, jot the numbers, and it saves on this device. Move between days with the arrows.</p>
+    </div>
+
+    <div class="tracker-shell reveal">
+      <div class="tracker-top">
+        <div class="tracker-date">
+          <div class="tracker-nav">
+            <button class="iconbtn" id="prevDay" title="Previous day">&larr;</button>
+            <button class="iconbtn" id="nextDay" title="Next day">&rarr;</button>
+          </div>
+          <input type="date" id="trackDate" />
+          <button class="iconbtn" id="todayBtn" title="Jump to today" style="width:auto;padding:0 12px;font-size:.8rem">Today</button>
+        </div>
+        <span class="save-flag" id="saveFlag">saved</span>
+      </div>
+
+      <div class="vitals" id="vitals"></div>
+
+      <div class="progress-line">
+        <div class="bar"><div class="fill" id="trackFill"></div></div>
+        <span class="pct" id="trackPct">0 of 0 done</span>
+      </div>
+
+      <div class="blocks" id="blocks"></div>
+
+      <div class="tracker-notes">
+        <label for="dayNotes">Notes for the day (how he felt, what the doctor said, anything)</label>
+        <textarea id="dayNotes" placeholder="A calmer morning. Managed two extra sips of water. Smiled at Anya."></textarea>
+      </div>
+      <div class="tracker-foot">
+        <button class="btn btn-line" id="printBtn">Print this day</button>
+        <button class="btn btn-line" id="clearBtn">Clear this day</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FAMILY WALL ==================== -->
+<section class="day family" id="family">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Your people</span>
+      <h2>The whole noisy, adoring lot of us</h2>
+      <p>Every one of these faces is here because of the man in the middle of them. Hover, tilt, and remember: this is what you are getting back to.</p>
+    </div>
+
+    <div class="wall" id="wall"></div>
+
+    <div class="notes-band reveal">
+      <div class="section-head">
+        <span class="eyebrow">In their own words</span>
+        <h2 style="font-size:clamp(1.7rem,4vw,2.4rem);margin-top:10px">Notes on the fridge</h2>
+        <p style="margin-top:10px">Tap any note to rewrite it in your own words. It saves automatically.</p>
+      </div>
+      <div class="notes-grid" id="notesGrid"></div>
+    </div>
+
+    <div class="anya-card reveal">
+      <img src="images/dad-anya.jpg" alt="Appa and Anya, co-napping champions" />
+      <div class="anya-txt">
+        <h3>Anya's official statement</h3>
+        <p>She has been supervising your side of the bed with great seriousness. She does not accept substitutes. Get well soon so she can ignore you in person again.</p>
+        <button class="btn btn-glow anya-btn" id="purrBtn">Give Anya a scratch</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== MUSIC ==================== -->
+<section class="day media" id="music">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">For your ears</span>
+      <h2>Sound to lie back to</h2>
+      <p>Rest the eyes, let these play. Every card opens a search so you can pick whatever the day calls for.</p>
+    </div>
+    <div class="media-grid" id="musicGrid"></div>
+  </div>
+</section>
+
+<!-- ==================== MOVIES ==================== -->
+<section class="day media" id="movies" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">For your evenings</span>
+      <h2>Gentle things to watch</h2>
+      <p>Nothing heavy. Nothing cruel. Just warm stories, good people, and the occasional happy cry.</p>
+    </div>
+    <div class="media-grid" id="movieGrid"></div>
+  </div>
+</section>
+
+<!-- ==================== CLOSING ==================== -->
+<section class="closing" id="closing">
+  <canvas class="stars"></canvas>
+  <div class="wrap">
+    <h2>Come home to us, Appa.</h2>
+    <p class="letter" id="closingLetter">
+      You have spent your whole life being the one who shows up. Who fixes it. Who carries it.
+      So let this be the season we finally get to carry you. Do the small things, tick the little boxes,
+      light one lamp a day, and let the rest be ours to worry about. We are not going anywhere.
+      We never were.
+    </p>
+    <p class="sign">All of us. Every single one.</p>
+    <div class="love-btn-wrap">
+      <button class="btn btn-glow" id="loveBtn">Send Appa some love</button>
+      <div class="love-count">Loved <b id="loveNum">0</b> times and counting</div>
+    </div>
+  </div>
+</section>
+<div class="foot">built by hand, with everything we have · for Balasundaram Athreya</div>
+
+<script>
+/* =========================================================================
+   CONFIG  ·  edit these freely, Achala
+   ========================================================================= */
+const CONFIG = {
+  totalSessions: 35,
+  completedSessions: 13,   // as of Mon 3 Aug 2026. Bump this or use "Light today's lamp".
+  chemoTotal: 6,
+  chemoLeft: 3,
+  // Family notes (tap on the site to rewrite; these are just first drafts)
+  notes: [
+    { from:"Amma · Ranjani", text:"Forty years I have watched you look after everyone. Now it is my turn, and I am not letting go of your hand for a second. Get strong. I am waiting for our next fight over the AC temperature." },
+    { from:"Achala", text:"You are the best guy in the world and I do not say that lightly. I do not know how to do this life without you, so you are not allowed to make me try. A few more lamps, Appa. I am counting every one with you." },
+    { from:"Anupama", text:"You show up for all of us, always. So we are showing up for you now, loudly, until you are sick of us. Rest. We have got the rest handled." },
+    { from:"Akshay", text:"He does not have the words, but he knows your voice, your smell, your hand on his head. He is waiting for all three. Come back and give them to him." },
+    { from:"Jahan", text:"The kindest, funniest, most generous man I married into. This family runs on you. Take the days you need. We will keep the engine warm." },
+    { from:"The whole clan", text:"Sharada Pati, Bhavani and Maha, Manasa and Samhita, Shiv, Thatha, Rama Chiti, and Ram all the way from the US. Every one of us has a hand on your shoulder today. Feel it." },
+  ],
+  // Photos for the family wall  { src, caption, who }
+  wall: [
+    { src:"family-four.jpg",   who:"The four of you",  cap:"The whole reason for everything. Look at that grin, we need it back." },
+    { src:"dad-son.jpg",       who:"Appa & Akshay",   cap:"No words needed. Never were." },
+    { src:"mum-dad-dinner.jpg",who:"Appa & Amma",     cap:"Forty years and she still leans in like that." },
+    { src:"dad-dog.jpg",       who:"Softest man alive",cap:"Even the strays know a good one when they see him." },
+    { src:"dad-fun.jpg",       who:"Certified menace", cap:"Explaining something very important to a very patient statue." },
+    { src:"mum-dad-field.jpg", who:"Out in the green", cap:"The hat. The laugh. The whole holiday in one frame." },
+    { src:"family-gather.jpg", who:"The gang",         cap:"A table full of people who adore you. This is what is waiting." },
+    { src:"together-clinic.jpg",who:"Team Appa",       cap:"Never alone. Not for one appointment. Not for one minute." },
+  ],
+};
+
+/* =========================================================================
+   PETALS  ·  gentle cursor atmosphere
+   ========================================================================= */
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+(function(){
+  if(reduce) return;
+  const c = document.getElementById('petals'), x = c.getContext('2d');
+  let w,h,parts=[],mouse={x:-999,y:-999};
+  function size(){ w=c.width=innerWidth; h=c.height=innerHeight; }
+  size(); addEventListener('resize',size);
+  addEventListener('pointermove',e=>{ mouse.x=e.clientX; mouse.y=e.clientY;
+    if(Math.random()<.28) spawn(e.clientX,e.clientY); });
+  function spawn(px,py){ parts.push({x:px+(Math.random()*30-15),y:py+(Math.random()*20-10),
+    vx:Math.random()*.6-.3, vy:Math.random()*.6+.2, r:Math.random()*3+1.4,
+    life:1, hue:35+Math.random()*20, rot:Math.random()*6}); }
+  function tick(){
+    x.clearRect(0,0,w,h);
+    for(let i=parts.length-1;i>=0;i--){ const p=parts[i];
+      p.x+=p.vx; p.y+=p.vy; p.vy+=.006; p.life-=.012; p.rot+=.03;
+      if(p.life<=0){ parts.splice(i,1); continue; }
+      x.globalAlpha=Math.max(0,p.life)*.8;
+      x.fillStyle=`hsl(${p.hue},90%,${60+p.life*10}%)`;
+      x.beginPath();
+      x.ellipse(p.x,p.y,p.r,p.r*1.9,p.rot,0,7); x.fill();
+      x.globalAlpha=Math.max(0,p.life)*.25;
+      x.beginPath(); x.arc(p.x,p.y,p.r*3,0,7); x.fill();
+    }
+    if(parts.length>240) parts.splice(0,parts.length-240);
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+/* twinkle stars on dark panels */
+document.querySelectorAll('.stars').forEach(cv=>{
+  const x=cv.getContext('2d'); let w,h,st=[];
+  function s(){ const r=cv.getBoundingClientRect(); w=cv.width=r.width; h=cv.height=r.height;
+    st=Array.from({length:Math.floor(w*h/9000)},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.3+.2,t:Math.random()*6})); }
+  s(); addEventListener('resize',s);
+  (function d(){ x.clearRect(0,0,w,h);
+    st.forEach(p=>{ p.t+=.02; const a=.3+Math.abs(Math.sin(p.t))*.6;
+      x.globalAlpha=a; x.fillStyle='#ffe8bf'; x.beginPath(); x.arc(p.x,p.y,p.r,0,7); x.fill(); });
+    if(!reduce) requestAnimationFrame(d);
+  })();
+});
+
+/* =========================================================================
+   HERO portrait tilt
+   ========================================================================= */
+(function(){
+  if(reduce) return;
+  const p=document.getElementById('portrait');
+  const hero=document.querySelector('.hero');
+  hero.addEventListener('pointermove',e=>{
+    const r=hero.getBoundingClientRect();
+    const dx=(e.clientX-r.left)/r.width-.5, dy=(e.clientY-r.top)/r.height-.5;
+    p.style.transform=`rotateY(${dx*10}deg) rotateX(${-dy*10}deg) translateZ(0)`;
+  });
+  hero.addEventListener('pointerleave',()=>{ p.style.transform=''; });
+})();
+
+/* =========================================================================
+   LAMPS  ·  the countdown, with localStorage
+   ========================================================================= */
+const LS = {
+  get:(k,d)=>{ try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v);}catch(e){return d;} },
+  set:(k,v)=>{ try{localStorage.setItem(k,JSON.stringify(v));}catch(e){} }
+};
+const KEY_DONE='appa.lamps.done';
+let done = LS.get(KEY_DONE, CONFIG.completedSessions);
+done = Math.max(0, Math.min(CONFIG.totalSessions, done));
+
+const grid=document.getElementById('lampgrid');
+function buildLamps(){
+  grid.innerHTML='';
+  for(let i=1;i<=CONFIG.totalSessions;i++){
+    const el=document.createElement('div');
+    el.className='lamp'+(i<=done?' lit':'');
+    if(i===done+1) el.classList.add('today');
+    el.innerHTML=`<span class="flame"></span><span class="diya"></span><span class="num">${i}</span>`;
+    if(i===done+1){ el.addEventListener('click',()=>{ if(done<CONFIG.totalSessions){ done++; commit(el); } }); }
+    grid.appendChild(el);
+  }
+}
+function commit(litEl){
+  LS.set(KEY_DONE,done);
+  if(litEl) burst(litEl);
+  buildLamps(); syncCounts();
+}
+function syncCounts(){
+  const left=CONFIG.totalSessions-done;
+  const pct=Math.round(done/CONFIG.totalSessions*100);
+  document.getElementById('heroDone').textContent=done;
+  document.getElementById('heroLeft').textContent=left;
+  document.getElementById('heroChemo').textContent=CONFIG.chemoLeft;
+  document.getElementById('chipDone').textContent=done;
+  document.getElementById('chipLeft').textContent=left;
+  document.getElementById('chipPct').textContent=pct+'%';
+  // honest, warm milestone line
+  const half=Math.ceil(CONFIG.totalSessions/2);
+  let m='';
+  if(done>=CONFIG.totalSessions) m='Every single lamp is lit. You did the whole thing. We are so proud of you.';
+  else if(done>=half) m=`Past the halfway line. It is the coming-home half now, ${left} to go.`;
+  else { const need=half-done; m=`${need} more and you cross the halfway mark. So close you can see it.`; }
+  document.getElementById('milestone').textContent=m;
+}
+document.getElementById('markToday').addEventListener('click',()=>{
+  if(done<CONFIG.totalSessions){ done++; const t=grid.querySelector('.lamp.today')||grid.children[done-1]; commit(t); }
+});
+document.getElementById('undoLamp').addEventListener('click',()=>{
+  if(done>0){ done--; commit(null); }
+});
+
+/* spark burst when a lamp lights */
+function burst(el){
+  if(reduce) return;
+  const r=el.getBoundingClientRect();
+  const cx=r.left+r.width/2, cy=r.top+r.height/2;
+  for(let i=0;i<16;i++){
+    const s=document.createElement('div');
+    s.style.cssText=`position:fixed;left:${cx}px;top:${cy}px;width:6px;height:6px;border-radius:50%;
+      background:hsl(${35+Math.random()*20},95%,65%);pointer-events:none;z-index:80;box-shadow:0 0 8px #ffcb6b`;
+    document.body.appendChild(s);
+    const ang=Math.random()*Math.PI*2, dist=30+Math.random()*60;
+    s.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},
+      {transform:`translate(${Math.cos(ang)*dist-3}px,${Math.sin(ang)*dist-3}px) scale(0)`,opacity:0}],
+      {duration:700+Math.random()*400,easing:'cubic-bezier(.2,.7,.2,1)'}).onfinish=()=>s.remove();
+  }
+}
+buildLamps(); syncCounts();
+
+/* =========================================================================
+   MOTIVATE  ·  the deck
+   ========================================================================= */
+const DECK = [
+  "You have carried this whole family on your back for forty years. Let us carry you for forty days.",
+  "You do not have to be brave for us today. You only have to be here. That is more than enough.",
+  "Rest is not giving up. Rest is how you win this slowly, one quiet day at a time.",
+  "Every lamp you light is a morning you refused to quit. Look how many are already glowing.",
+  "The hard part is not forever. The love is.",
+  "You are not behind. You are exactly as far as a strong man gets on a hard road.",
+  "Anya has claimed your side of the bed. She expects you back. Do not disappoint the cat.",
+  "Some days the only job is to breathe and let the medicine work. You did that job today.",
+  "We are not counting down because it is long. We are counting down because you are almost through.",
+  "Pain is loud, but it is not the truth about you. You are the man who fixes everyone else's day.",
+  "You raised people who would move the earth for you. Today we only have to move a little.",
+  "Slow sips. Small steps. A short walk. This is how giants get back up.",
+  "You are allowed to be tired. You are not allowed to think you are alone.",
+  "Amma is right here. She is not going anywhere. Neither are we.",
+  "One more feed. One more gargle. One more lamp. That is the whole plan, and you are doing it.",
+  "The strongest thing in this house is not the treatment. It is your stubbornness. Use it.",
+  "You have been to harder places than a hospital chair and walked out smiling.",
+  "We do not need you to be okay right now. We just need you to stay. The rest we will handle.",
+  "The finish line is closer than the start now. You are on the coming-home side of this.",
+  "Every doctor sees a patient. We see the funniest, kindest, most maddening man we know.",
+  "Little by little, a little becomes a lot. That is the whole secret. You already know it.",
+  "Fall seven times, stand up eight. You have done it before. You are doing it now.",
+  "You taught us that showing up is most of everything. So we show up. So do you.",
+  "The body is doing hard, invisible work today. Be gentle with the man doing it.",
+  "When you cannot see the whole staircase, just take the next step. We are holding the rail.",
+  "Akshay does not have the words, but he knows your voice. Come back so he can hear it.",
+  "You are the best of us. On the days you cannot feel that, we will hold it for you.",
+  "Not today. That is what your shirt says. That is what your body is telling this thing. Not today.",
+];
+let deckOrder=[], deckI=0;
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function draw(){
+  if(deckI>=deckOrder.length){ deckOrder=shuffle(DECK.map((_,i)=>i)); deckI=0; }
+  const idx=deckOrder[deckI++];
+  const card=document.getElementById('loveCard');
+  const q=document.getElementById('quoteText');
+  card.classList.add('flip');
+  setTimeout(()=>{ q.textContent=DECK[idx]; card.classList.remove('flip'); },260);
+  document.getElementById('drawCount').textContent=`${deckI} of ${DECK.length} things we want to say`;
+}
+document.getElementById('drawBtn').addEventListener('click',draw);
+
+/* =========================================================================
+   TRACKER  ·  faithful to the printed checklist, saved per day
+   ========================================================================= */
+const VITALS=[
+  {k:'radDay',label:'Radiation day (n/35)'},
+  {k:'weight',label:'Weight (kg)'},
+  {k:'bp',label:'BP'},
+  {k:'temp',label:'Temperature'},
+  {k:'spo2',label:'SpO2'},
+  {k:'pulse',label:'Pulse'},
+];
+const BLOCKS=[
+  {t:'7:45 AM',n:'Before feed',items:[
+    'Hydration','Soft brushing','Salt + baking soda gargle',
+    {x:'Mouthwash: Sucrafil + Benadryl + Mucain (5 mL each)',s:'rinse, gargle, spit'},
+    {x:'or Betadine mouthwash',s:'pick any one'},
+    {x:'or Chlorhex Heal mouthwash',s:'pick any one'},
+    'EasyGargle',
+    {x:'Viscous Xylocaine 5 mL',s:'SOS once ulcers reduce'},
+    {x:'Zytee Gel',s:'optional, while ulcers present'},
+    {x:'Candid Mouth Paint',s:'optional, while ulcers present'},
+    {x:'Vault 20 mg',s:'till 8 Aug'},
+  ]},
+  {t:'8:00 AM',n:'Feed 1',items:['Flush PEG before feed','PEG Feed 1','Flush PEG after feed']},
+  {t:'8:15 AM',n:'After feed',items:[
+    {x:'Augmentin 625 mg',s:'till 6 Aug'},{x:'Forcan 150 mg',s:'till 6 Aug'},
+    {x:'Emeset 8 mg',s:'till 4 Aug'},{x:'Calpol 650',s:'SOS, till 7 Aug'},
+    {x:'Montair FX',s:'SOS, till 6 Aug'},{x:'Sucrafil Syrup 10 mL',s:'optional'},
+  ]},
+  {t:'8:30 to 10:00 AM',n:'Vitals & radiation',items:[
+    'BP','Weight','Temperature','SpO2',{x:'Concor AM',s:'till 1 Sep'},'Radiation','Chemo','Hydration',
+  ]},
+  {t:'10:15 AM',n:'Feed 2',items:['Flush PEG before feed','PEG Feed 2','Flush PEG after feed']},
+  {t:'12:00 PM',n:'Feed 3',items:['Flush PEG before feed','PEG Feed 3','Flush PEG after feed']},
+  {t:'2:00 PM',n:'Feed 4',items:['Flush PEG before feed','PEG Feed 4','Flush PEG after feed']},
+  {t:'2:15 PM',n:'Mouth care',items:[
+    'Hydration',{x:'Zytee Gel',s:'optional'},{x:'Candid Mouth Paint',s:'optional'},
+    {x:'Viscous Xylocaine 5 mL',s:'SOS'},
+  ]},
+  {t:'4:00 PM',n:'Feed 5',items:['Flush PEG before feed','PEG Feed 5','Flush PEG after feed']},
+  {t:'5:00 PM',n:'Move',items:['Walk']},
+  {t:'6:00 PM',n:'Feed 6',items:['Flush PEG before feed','PEG Feed 6','Flush PEG after feed']},
+  {t:'7:45 PM',n:'Before feed',items:[{x:'Vault 20 mg',s:'till 8 Aug'}]},
+  {t:'8:00 PM',n:'Feed 7',items:['Flush PEG before feed','PEG Feed 7','Flush PEG after feed']},
+  {t:'8:15 PM',n:'After feed',items:[
+    {x:'Augmentin 625 mg',s:'till 6 Aug'},{x:'Forcan 150 mg',s:'till 6 Aug'},
+    {x:'Emeset 8 mg',s:'till 4 Aug'},{x:'Ezedoc 10 mg',s:'till 1 Nov'},
+    {x:'Sucrafil Syrup 10 mL',s:'optional'},
+  ]},
+  {t:'9:30 PM',n:'Feed 8',items:['Flush PEG before feed','PEG Feed 8','Flush PEG after feed']},
+  {t:'9:45 PM',n:'Night care',items:[
+    'Soft brushing','Salt + baking soda gargle',
+    {x:'Mouthwash (any one): Sucrafil + Benadryl + Mucain',s:'rinse, gargle, spit'},
+    {x:'or Betadine mouthwash',s:'pick any one'},
+    {x:'or Chlorhex Heal mouthwash',s:'pick any one'},
+    'EasyGargle',{x:'Viscous Xylocaine 5 mL',s:'SOS'},
+    {x:'Zytee Gel',s:'optional'},{x:'Candid Mouth Paint',s:'optional'},
+    {x:'Montair FX',s:'SOS, till 6 Aug'},{x:'Calpol 650',s:'SOS, till 7 Aug'},
+    'Neck & jaw exercises','Hand exercises','Hydration',
+  ]},
+  {t:'Any time',n:'SOS, as needed',items:[
+    {x:'Dolo / Calpol 650 mg',s:'fever or pain'},
+    {x:'Domstal 10 mg',s:'30 min before feed if nausea'},
+    {x:'Enterogermina',s:'loose stools'},
+    {x:'Duphalac / Cremaffin Plus',s:'constipation, as advised'},
+    'Frequent hydration through the day',
+  ]},
+];
+
+function normItem(it){ return typeof it==='string'?{x:it,s:''}:it; }
+function slug(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+
+const vitalsEl=document.getElementById('vitals');
+const blocksEl=document.getElementById('blocks');
+const dateInput=document.getElementById('trackDate');
+const saveFlag=document.getElementById('saveFlag');
+
+function keyFor(d){ return 'appa.track.'+d; }
+function todayISO(){ const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+let curDate=todayISO();
+
+function buildVitals(){
+  vitalsEl.innerHTML='';
+  VITALS.forEach(v=>{
+    const d=document.createElement('div'); d.className='vital';
+    d.innerHTML=`<label>${v.label}</label><input data-vk="${v.k}" type="text" autocomplete="off" />`;
+    vitalsEl.appendChild(d);
+  });
+}
+function buildBlocks(){
+  blocksEl.innerHTML='';
+  BLOCKS.forEach((b,bi)=>{
+    const wrap=document.createElement('div'); wrap.className='block';
+    const items=b.items.map((raw,ii)=>{
+      const it=normItem(raw); const id=`b${bi}-${ii}-${slug(it.x).slice(0,24)}`;
+      return `<label class="check">
+        <input type="checkbox" data-ck="${id}"/>
+        <span class="box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+        <span class="lab">${it.x}${it.s?`<small>${it.s}</small>`:''}</span>
+      </label>`;
+    }).join('');
+    wrap.innerHTML=`<h4>${b.n} <span class="time">· ${b.t}</span></h4><div class="items">${items}</div>`;
+    blocksEl.appendChild(wrap);
+  });
+}
+buildVitals(); buildBlocks();
+
+function collect(){
+  const data={v:{},c:{},notes:document.getElementById('dayNotes').value};
+  vitalsEl.querySelectorAll('input').forEach(i=>data.v[i.dataset.vk]=i.value);
+  blocksEl.querySelectorAll('input').forEach(i=>{ if(i.checked) data.c[i.dataset.ck]=1; });
+  return data;
+}
+function apply(data){
+  data=data||{v:{},c:{},notes:''};
+  vitalsEl.querySelectorAll('input').forEach(i=>i.value=(data.v&&data.v[i.dataset.vk])||'');
+  blocksEl.querySelectorAll('input').forEach(i=>i.checked=!!(data.c&&data.c[i.dataset.ck]));
+  document.getElementById('dayNotes').value=data.notes||'';
+  updateProgress();
+}
+function load(d){ curDate=d; dateInput.value=d; apply(LS.get(keyFor(d),null)); flag('loaded'); }
+function save(){ LS.set(keyFor(curDate),collect()); flag('saved'); }
+let flagT;
+function flag(t){ saveFlag.textContent=t; clearTimeout(flagT); flagT=setTimeout(()=>saveFlag.textContent='saved',1200); }
+
+function updateProgress(){
+  const boxes=blocksEl.querySelectorAll('input');
+  const done=[...boxes].filter(i=>i.checked).length;
+  const total=boxes.length;
+  document.getElementById('trackFill').style.width=(total?done/total*100:0)+'%';
+  document.getElementById('trackPct').textContent=`${done} of ${total} done`;
+}
+
+blocksEl.addEventListener('change',()=>{ updateProgress(); save(); });
+vitalsEl.addEventListener('input',save);
+document.getElementById('dayNotes').addEventListener('input',()=>{ clearTimeout(flagT); saveFlag.textContent='typing'; flagT=setTimeout(save,600); });
+
+function shiftDay(n){ const d=new Date(curDate); d.setDate(d.getDate()+n); load(d.toISOString().slice(0,10)); }
+document.getElementById('prevDay').onclick=()=>shiftDay(-1);
+document.getElementById('nextDay').onclick=()=>shiftDay(1);
+document.getElementById('todayBtn').onclick=()=>load(todayISO());
+dateInput.onchange=()=>load(dateInput.value);
+document.getElementById('printBtn').onclick=()=>window.print();
+document.getElementById('clearBtn').onclick=()=>{
+  if(confirm('Clear everything logged for this day?')){ localStorage.removeItem(keyFor(curDate)); apply(null); flag('cleared'); }
+};
+load(curDate);
+
+/* =========================================================================
+   FAMILY notes + wall
+   ========================================================================= */
+const notesGrid=document.getElementById('notesGrid');
+CONFIG.notes.forEach((n,i)=>{
+  const saved=LS.get('appa.note.'+i,null);
+  const el=document.createElement('div'); el.className='note';
+  el.innerHTML=`<div class="from">${n.from}</div>
+    <div class="body" contenteditable="true" data-ni="${i}">${saved!==null?saved:n.text}</div>
+    <div class="edit-hint">tap to rewrite</div>`;
+  notesGrid.appendChild(el);
+});
+notesGrid.addEventListener('input',e=>{
+  const b=e.target.closest('.body'); if(!b) return;
+  LS.set('appa.note.'+b.dataset.ni, b.innerHTML);
+});
+
+const wall=document.getElementById('wall');
+CONFIG.wall.forEach(p=>{
+  const f=document.createElement('figure'); f.className='frame';
+  f.innerHTML=`<img src="images/${p.src}" alt="${p.cap}" loading="lazy"/>
+    <div class="who">${p.who}</div><figcaption>${p.cap}</figcaption>`;
+  wall.appendChild(f);
+});
+// gentle tilt on frames
+if(!reduce){
+  wall.querySelectorAll('.frame').forEach(f=>{
+    f.addEventListener('pointermove',e=>{ const r=f.getBoundingClientRect();
+      const dx=(e.clientX-r.left)/r.width-.5, dy=(e.clientY-r.top)/r.height-.5;
+      f.style.transform=`perspective(700px) rotateY(${dx*6}deg) rotateX(${-dy*6}deg) translateY(-4px)`; });
+    f.addEventListener('pointerleave',()=>f.style.transform='');
+  });
+}
+
+/* Anya purr = floating hearts */
+document.getElementById('purrBtn').addEventListener('click',()=>floatEmoji('🐾',document.getElementById('purrBtn')));
+
+/* =========================================================================
+   MUSIC + MOVIES
+   ========================================================================= */
+function yt(q){ return 'https://www.youtube.com/results?search_query='+encodeURIComponent(q); }
+const MUSIC=[
+  {k:'Carnatic',t:'The morning ragas',list:['M.S. Subbulakshmi, Suprabhatam','Balamuralikrishna','Semmangudi Srinivasa Iyer','T.M. Krishna'],q:'MS Subbulakshmi Suprabhatam'},
+  {k:'Ghazals',t:'Slow evenings',list:['Jagjit Singh','Mehdi Hassan','Ghulam Ali','Begum Akhtar'],q:'Jagjit Singh best ghazals'},
+  {k:'Old Hindi',t:'The golden voices',list:['Kishore Kumar','Mohammed Rafi','Mukesh','Hemant Kumar'],q:'Kishore Kumar Rafi old hindi hits'},
+  {k:'Old Tamil',t:'Home, in a tune',list:['Ilaiyaraaja melodies','M.S. Viswanathan','T.M. Soundararajan','P. Susheela'],q:'Ilaiyaraaja tamil melodies old hits'},
+  {k:'UB40',t:'Your one guilty English pleasure',list:['Red Red Wine','Kingston Town','Cant Help Falling in Love','Higher Ground'],q:'UB40 greatest hits'},
+];
+const MOVIES=[
+  {t:'Little House on the Prairie',n:'The old comfort. Good people, hard land, soft hearts.',q:'Little House on the Prairie series'},
+  {t:'The Intouchables',n:'An unlikely friendship that will make you laugh out loud.',q:'The Intouchables 2011 film'},
+  {t:'Chef',n:'Food, second chances, and a very good father son road trip.',q:'Chef 2014 movie Jon Favreau'},
+  {t:'3 Idiots',n:'Warm, funny, and quietly wise. All izz well.',q:'3 Idiots full movie'},
+  {t:'Swades',n:'A gentle homecoming. Exactly the theme for right now.',q:'Swades movie'},
+  {t:'Paddington 2',n:'Pure kindness in a bear suit. Impossible not to smile.',q:'Paddington 2 film'},
+  {t:'Michael Madana Kama Rajan',n:'Kamal at his funniest. Guaranteed belly laughs.',q:'Michael Madana Kama Rajan full movie'},
+  {t:'Malgudi Days',n:'Slow, sweet, nostalgic. One little story at a time.',q:'Malgudi Days episodes'},
+];
+const mg=document.getElementById('musicGrid');
+MUSIC.forEach(m=>{ const c=document.createElement('div'); c.className='mcard';
+  c.innerHTML=`<div class="k">${m.k}</div><h4>${m.t}</h4>
+    <ul>${m.list.map(x=>`<li>${x}</li>`).join('')}</ul>
+    <a href="${yt(m.q)}" target="_blank" rel="noopener">Play a search &rarr;</a>`;
+  mg.appendChild(c);
+});
+const vg=document.getElementById('movieGrid');
+MOVIES.forEach(m=>{ const c=document.createElement('div'); c.className='mcard';
+  c.innerHTML=`<div class="k">watch</div><h4>${m.t}</h4>
+    <p style="color:var(--text-soft);font-size:.95rem;line-height:1.5;margin-bottom:16px">${m.n}</p>
+    <a href="${yt(m.q)}" target="_blank" rel="noopener">Find it &rarr;</a>`;
+  vg.appendChild(c);
+});
+
+/* =========================================================================
+   LOVE button
+   ========================================================================= */
+const KEY_LOVE='appa.love';
+let love=LS.get(KEY_LOVE, 0);
+const loveNum=document.getElementById('loveNum');
+function renderLove(){ loveNum.textContent=love.toLocaleString('en-IN'); }
+renderLove();
+document.getElementById('loveBtn').addEventListener('click',(e)=>{
+  love++; LS.set(KEY_LOVE,love); renderLove();
+  floatEmoji('❤',e.currentTarget);
+});
+function floatEmoji(ch,fromEl){
+  if(reduce) return;
+  const r=fromEl.getBoundingClientRect();
+  for(let i=0;i<8;i++){
+    const s=document.createElement('div');
+    s.textContent=ch;
+    s.style.cssText=`position:fixed;left:${r.left+r.width/2}px;top:${r.top}px;font-size:${14+Math.random()*16}px;
+      pointer-events:none;z-index:90;opacity:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))`;
+    document.body.appendChild(s);
+    const dx=(Math.random()-.5)*160, dy=-90-Math.random()*140;
+    s.animate([{transform:'translate(-50%,0) scale(.6)',opacity:0},
+      {transform:`translate(calc(-50% + ${dx*.4}px),${dy*.5}px) scale(1.1)`,opacity:1,offset:.35},
+      {transform:`translate(calc(-50% + ${dx}px),${dy}px) scale(.8)`,opacity:0}],
+      {duration:1400+Math.random()*500,easing:'cubic-bezier(.2,.7,.2,1)'}).onfinish=()=>s.remove();
+  }
+}
+
+/* =========================================================================
+   date label + scroll reveals
+   ========================================================================= */
+(function(){
+  const d=new Date();
+  const day=d.toLocaleDateString('en-GB',{weekday:'long'});
+  const parts=['morning','afternoon','evening'];
+  const h=d.getHours(); const tod=h<12?parts[0]:h<17?parts[1]:parts[2];
+  document.getElementById('todayLabel').textContent=`${day} ${tod}`;
+})();
+const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
