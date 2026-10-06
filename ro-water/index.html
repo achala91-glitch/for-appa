@@ -5,45 +5,55 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>RO Water Check</title>
 <meta name="description" content="How much water does your RO purifier waste? Take a guess, then play with the numbers." />
-<meta name="theme-color" content="#0B3D5C" />
+<meta name="theme-color" content="#3B2C7C" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
 /* =========================================================================
-   RO WATER CHECK
+   RO WATER CHECK  ·  Hydron
    A toy, not a form. Five screens: guess, play, reveal, report card, CTA.
+   Brand: Hydron purple + indigo, the logo's blue-to-cyan drop, lime hexagon
+   accent, cream ripple paper from the handover manual, serif headlines.
    All numbers come from the CONFIG block at the top of the <script>.
    Animations only touch transform/opacity so they stay smooth on cheap phones.
    ========================================================================= */
 
+/* Layout: single centred phone column; dark indigo for the "moment" screens
+   (guess, reveal, report card), cream ripple paper for the working screens. */
 :root{
-  --deep:#0B3D5C;
-  --deep-2:#072A40;
-  --sky:#E8F6FF;
-  --water:#2BA8E0;
-  --water-2:#1279B8;
-  --foam:#9EE0FF;
-  --sun:#FFC83D;
-  --coral:#FF6B5B;
-  --mint:#2FCB8E;
-  --ink:#0E2433;
-  --soft:#5B7385;
+  color-scheme:light;
+  --purple:#654C9E;      /* wordmark */
+  --purple-dk:#4E3A85;
+  --indigo:#3B2C7C;      /* logo H and swoosh */
+  --indigo-2:#231A52;
+  --blue:#2E8AC9;        /* drop outline */
+  --cyan:#48AACF;        /* top hexagon */
+  --lime:#A4CC42;        /* green hexagon */
+  --lime-dk:#7FA62A;
+  --cream:#FAF4EB;       /* manual paper */
+  --cream-2:#F2E9DB;
+  --lav:#F0EBF8;
+  --ink:#2A2440;
+  --soft:#6D6681;
+  --line:#E5DCCC;
   --card:#FFFFFF;
-  --line:#D4E7F3;
-  --radius:24px;
+  --error:#B3261E;
+  --serif:"DM Serif Display",Georgia,"Times New Roman",serif;
+  --sans:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --radius:22px;
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0}
 body{
-  font-family:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-family:var(--sans);
   color:var(--ink);
-  background:var(--sky);
+  background:var(--cream);
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
-h1,h2,h3{font-family:"Baloo 2","Nunito",system-ui,sans-serif;line-height:1.05;margin:0;font-weight:800}
+h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance}
 p{margin:0}
 button{font:inherit;color:inherit}
 
@@ -56,20 +66,45 @@ button{font:inherit;color:inherit}
 @keyframes screenIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 .inner{width:100%;max-width:440px}
 
+/* indigo "moment" screens and cream ripple paper */
+.dark{
+  color:#fff;
+  background:
+    radial-gradient(120% 70% at 50% 0%,#5B45A3 0%,var(--indigo) 50%,var(--indigo-2) 100%);
+}
+.paper{
+  background:
+    repeating-radial-gradient(circle at 85% 12%,transparent 0 22px,rgba(101,76,158,.035) 23px 24px,transparent 25px 46px),
+    var(--cream);
+}
+
+/* brand marks */
+.brand{display:flex;justify-content:center;margin-bottom:22px}
+.brand img{height:54px;width:auto;display:block}
+.brand.sm img{height:38px}
+.brand.lockup img{height:64px}
+
+/* dot-and-line rule from the manual's section headings */
+.rule{display:flex;align-items:center;gap:0;margin:10px auto 0;width:120px}
+.rule::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.rule::after{content:"";height:1.5px;background:currentColor;flex:1}
+.rule{opacity:.55}
+
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:10px;
-  border:0;cursor:pointer;
-  font-family:"Baloo 2",sans-serif;font-weight:700;font-size:1.15rem;
-  padding:15px 26px;border-radius:999px;width:100%;text-decoration:none;
-  background:var(--sun);color:var(--ink);
-  box-shadow:0 6px 0 #D9A21A;
+  border:0;cursor:pointer;text-decoration:none;
+  font-family:var(--sans);font-weight:800;font-size:1.05rem;letter-spacing:.01em;
+  padding:16px 26px;border-radius:999px;width:100%;
+  background:var(--purple);color:#fff;
+  box-shadow:0 5px 0 var(--indigo-2);
   transition:transform .12s ease,box-shadow .12s ease;
 }
-.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #D9A21A}
-.btn.ghost{background:transparent;box-shadow:none;color:inherit;border:2px solid currentColor;opacity:.85}
-.btn.ghost:active{transform:scale(.97)}
-.btn.wa{background:#25D366;color:#06341B;box-shadow:0 6px 0 #179648}
-.btn.wa:active{box-shadow:0 2px 0 #179648}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--indigo-2)}
+.btn:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
+.dark .btn{background:#fff;color:var(--indigo);box-shadow:0 5px 0 rgba(0,0,0,.28)}
+.dark .btn:active{box-shadow:0 1px 0 rgba(0,0,0,.28)}
+.btn.wa{background:#25D366;color:#06341B;box-shadow:0 5px 0 #179648}
+.btn.wa:active{box-shadow:0 1px 0 #179648}
 .btn[disabled]{opacity:.5;pointer-events:none}
 
 /* ---------- big friendly sliders ---------- */
@@ -81,58 +116,64 @@ input[type=range]{
 }
 input[type=range]:focus{outline:none}
 input[type=range]::-webkit-slider-runnable-track{
-  height:14px;border-radius:99px;
-  background:linear-gradient(90deg,var(--water) 0 var(--p),#CFE6F3 var(--p) 100%);
+  height:12px;border-radius:99px;
+  background:linear-gradient(90deg,var(--cyan) 0,var(--blue) calc(var(--p) * .6),var(--purple) var(--p),var(--cream-2) var(--p) 100%);
 }
-input[type=range]::-moz-range-track{height:14px;border-radius:99px;background:#CFE6F3}
-input[type=range]::-moz-range-progress{height:14px;border-radius:99px;background:var(--water)}
+.dark input[type=range]::-webkit-slider-runnable-track{
+  background:linear-gradient(90deg,var(--cyan) 0,var(--lime) var(--p),rgba(255,255,255,.18) var(--p) 100%);
+}
+input[type=range]::-moz-range-track{height:12px;border-radius:99px;background:var(--cream-2)}
+.dark input[type=range]::-moz-range-track{background:rgba(255,255,255,.18)}
+input[type=range]::-moz-range-progress{height:12px;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--purple))}
 input[type=range]::-webkit-slider-thumb{
   -webkit-appearance:none;appearance:none;
-  width:36px;height:36px;margin-top:-11px;border-radius:50%;
-  background:#fff;border:5px solid var(--water-2);
-  box-shadow:0 4px 10px rgba(11,61,92,.3);
+  width:34px;height:34px;margin-top:-11px;border-radius:50%;
+  background:#fff;border:5px solid var(--purple);
+  box-shadow:0 4px 10px rgba(35,26,82,.3);
   transition:transform .12s ease;
 }
+.dark input[type=range]::-webkit-slider-thumb{border-color:var(--lime)}
 input[type=range]:active::-webkit-slider-thumb{transform:scale(1.18)}
 input[type=range]::-moz-range-thumb{
-  width:28px;height:28px;border-radius:50%;
-  background:#fff;border:5px solid var(--water-2);
-  box-shadow:0 4px 10px rgba(11,61,92,.3);
+  width:26px;height:26px;border-radius:50%;
+  background:#fff;border:5px solid var(--purple);
+  box-shadow:0 4px 10px rgba(35,26,82,.3);
 }
-input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--sun);outline-offset:2px}
+input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--lime);outline-offset:2px}
 
 /* =====================  1. GUESS  ===================== */
-#guess{background:radial-gradient(120% 80% at 50% 0%,#145A84 0%,var(--deep) 55%,var(--deep-2) 100%);color:#fff;text-align:center}
-#guess h1{font-size:clamp(2rem,8.5vw,2.8rem);margin-bottom:34px}
+#guess{text-align:center}
+#guess h1{font-size:clamp(2.1rem,9vw,2.9rem);margin-bottom:30px}
 .guess-drop{
   width:150px;height:150px;margin:0 auto 18px;position:relative;
   display:flex;align-items:center;justify-content:center;
 }
 .guess-drop svg{position:absolute;inset:0;width:100%;height:100%;transform:scale(var(--s,1));transition:transform .18s cubic-bezier(.3,1.6,.5,1)}
-.guess-num{position:relative;font-family:"Baloo 2";font-weight:800;font-size:2.9rem;line-height:1;margin-top:26px;color:var(--deep)}
-.guess-num small{display:block;font-size:.9rem;font-weight:700;opacity:.7;margin-top:2px}
+.guess-num{position:relative;font-family:var(--serif);font-size:3rem;line-height:1;margin-top:26px;color:#fff}
+.guess-num small{display:block;font-family:var(--sans);font-size:.8rem;font-weight:700;opacity:.85;margin-top:4px;letter-spacing:.04em}
 .guess-scale{display:flex;justify-content:space-between;font-size:.8rem;opacity:.6;margin:2px 4px 30px}
-.guess-hint{font-size:.9rem;opacity:.7;margin-top:18px;min-height:1.3em}
+.guess-hint{font-size:.9rem;opacity:.75;margin-top:18px;min-height:1.3em}
 
 /* =====================  2. PLAYGROUND  ===================== */
-#play{justify-content:flex-start;padding-top:12px;background:var(--sky)}
-.play-head{text-align:center;margin-bottom:8px}
-.play-head h2{font-size:1.45rem;color:var(--deep)}
+#play{justify-content:flex-start;padding-top:12px}
+.play-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.play-head img{height:34px;width:auto;flex:none}
+.play-head h2{font-size:1.4rem;color:var(--purple);text-align:right}
 
 .stage{
-  position:sticky;top:6px;z-index:10;
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:10;
   display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end;
-  background:#fff;border-radius:var(--radius);padding:12px 14px 12px;
-  box-shadow:0 18px 40px -26px rgba(11,61,92,.55);
+  background:var(--card);border-radius:var(--radius);padding:12px 14px 12px;
+  box-shadow:0 18px 40px -26px rgba(35,26,82,.55);
 }
 .tank-wrap{position:relative;padding-top:30px}
 .pipe{position:absolute;top:0;left:50%;width:58%;height:24px;transform:translateX(-12%)}
-.pipe::before{content:"";position:absolute;top:4px;left:0;right:0;height:12px;background:#9DB4C3;border-radius:6px}
-.pipe::after{content:"";position:absolute;top:4px;left:0;width:14px;height:26px;background:#9DB4C3;border-radius:0 0 6px 6px}
+.pipe::before{content:"";position:absolute;top:4px;left:0;right:0;height:12px;background:#B7AFC8;border-radius:6px}
+.pipe::after{content:"";position:absolute;top:4px;left:0;width:14px;height:26px;background:#B7AFC8;border-radius:0 0 6px 6px}
 .drips{position:absolute;top:26px;left:calc(50% - 7% + 3px);width:8px;height:60px;pointer-events:none;z-index:5}
 .drip{
   position:absolute;left:0;top:0;width:8px;height:11px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
-  background:var(--water);opacity:0;
+  background:var(--cyan);opacity:0;
   animation:drip var(--drip,1.2s) linear infinite;
 }
 .drip:nth-child(2){animation-delay:calc(var(--drip,1.2s) * -.33)}
@@ -141,8 +182,8 @@ input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--su
 
 .tank{
   position:relative;height:178px;border-radius:18px 18px 26px 26px;
-  background:linear-gradient(90deg,#EEF6FB,#F9FCFE 40%,#E4F0F7);
-  border:4px solid #B9D3E2;overflow:hidden;
+  background:linear-gradient(90deg,#F4F0FA,#FDFCFF 40%,#EEE8F7);
+  border:4px solid #D6CCE8;overflow:hidden;
   isolation:isolate;
 }
 .tank::after{ /* glass glint */
@@ -150,13 +191,13 @@ input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--su
   border-radius:10px;background:rgba(255,255,255,.75);z-index:3;
 }
 .ticks{position:absolute;right:6px;top:8%;bottom:8%;width:12px;z-index:3;display:flex;flex-direction:column;justify-content:space-between}
-.ticks i{display:block;height:2px;background:rgba(11,61,92,.25);border-radius:2px}
+.ticks i{display:block;height:2px;background:rgba(59,44,124,.25);border-radius:2px}
 .ticks i:nth-child(odd){width:12px}.ticks i:nth-child(even){width:7px;margin-left:5px}
 .water{
   position:absolute;left:0;right:0;top:0;height:100%;
   transform:translate3d(0,100%,0);will-change:transform;z-index:1;
 }
-.water-body{position:absolute;top:14px;left:0;right:0;bottom:0;background:linear-gradient(180deg,var(--water),var(--water-2))}
+.water-body{position:absolute;top:14px;left:0;right:0;bottom:0;background:linear-gradient(180deg,var(--cyan) 0%,var(--blue) 45%,var(--indigo) 100%)}
 .wave{position:absolute;top:0;left:0;width:200%;height:16px;display:flex;will-change:transform;animation:wave 2.4s linear infinite}
 .wave.back{top:-4px;opacity:.45;animation-duration:3.6s;animation-direction:reverse}
 .wave svg{width:50%;height:100%;flex:none}
@@ -169,130 +210,145 @@ input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--su
 @keyframes rise{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(-200px);opacity:0}}
 .tank-label{
   position:absolute;left:0;right:0;bottom:12px;text-align:center;z-index:4;
-  font-family:"Baloo 2";font-weight:800;color:#fff;font-size:1.45rem;line-height:1;
-  text-shadow:0 2px 6px rgba(7,42,64,.45);
+  font-family:var(--serif);color:#fff;font-size:1.5rem;line-height:1;
+  text-shadow:0 2px 6px rgba(35,26,82,.45);
 }
-.tank-label small{display:block;font-family:"Nunito";font-weight:700;font-size:.72rem;letter-spacing:.04em;opacity:.95;margin-top:3px}
-.tank-label.dark{color:var(--deep);text-shadow:none}
+.tank-label small{display:block;font-family:var(--sans);font-weight:700;font-size:.7rem;letter-spacing:.04em;opacity:.95;margin-top:4px}
+.tank-label.dark-text{color:var(--indigo);text-shadow:none}
 
 .side{display:flex;flex-direction:column;gap:8px}
-.stat{border-radius:16px;padding:9px 11px 8px;background:var(--sky)}
-.stat .k{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
-.stat .v{font-family:"Baloo 2";font-weight:800;font-size:1.45rem;line-height:1.1;color:var(--deep);font-variant-numeric:tabular-nums;white-space:nowrap}
-.stat.money{background:#FFF6DB}
-.stat.money .v{color:#8A5B00}
+.stat{border-radius:16px;padding:9px 11px 8px;background:var(--cream)}
+.stat .k{font-size:.66rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
+.stat .v{font-family:var(--serif);font-size:1.6rem;line-height:1.1;color:var(--indigo);font-variant-numeric:tabular-nums;white-space:nowrap;transform-origin:left center}
+.stat .v .unit{font-family:var(--sans);font-size:.8rem;font-weight:700;color:var(--soft)}
+.stat.money{background:var(--lav)}
+.stat.money .v{color:var(--purple)}
 .stat.money .v.bump{animation:bump .25s ease}
 @keyframes bump{50%{transform:scale(1.08)}}
-.stat .v{transform-origin:left center}
 .parts{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
-.parts span{font-size:.64rem;font-weight:700;background:#fff;border-radius:99px;padding:2px 7px;color:#8A5B00;font-variant-numeric:tabular-nums}
+.parts span{font-size:.64rem;font-weight:700;background:#fff;border-radius:99px;padding:2px 7px;color:var(--purple-dk);font-variant-numeric:tabular-nums}
 .tankers{font-size:1.05rem;line-height:1.2;letter-spacing:-2px;white-space:nowrap;margin-bottom:2px}
 
 .compare{
   grid-column:1/-1;
-  background:var(--deep);color:#fff;border-radius:14px;padding:9px 12px;
-  font-weight:700;font-size:.88rem;line-height:1.35;min-height:3.6em;
+  background:var(--indigo);color:#fff;border-radius:14px;padding:9px 12px;
+  font-weight:600;font-size:.88rem;line-height:1.4;min-height:3.6em;
   display:flex;flex-direction:column;justify-content:center;
 }
-.compare b{color:var(--sun)}
+.compare b{color:var(--lime);font-weight:800}
 
 .controls{margin-top:10px;display:flex;flex-direction:column;gap:6px}
-.ctl{background:#fff;border-radius:18px;padding:9px 16px 2px;box-shadow:0 10px 26px -22px rgba(11,61,92,.6)}
+.ctl{background:var(--card);border-radius:18px;padding:9px 16px 2px;box-shadow:0 10px 26px -22px rgba(35,26,82,.6)}
 .ctl-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-.ctl-top label{font-weight:800;font-size:.95rem}
-.ctl-top output{font-family:"Baloo 2";font-weight:800;font-size:1.3rem;color:var(--water-2);white-space:nowrap}
+.ctl-top label{font-weight:800;font-size:.92rem}
+.ctl-top label span{font-weight:600;font-size:.78rem;color:var(--soft)}
+.ctl-top output{font-family:var(--serif);font-size:1.4rem;color:var(--purple);white-space:nowrap}
 .faces{font-size:.95rem;letter-spacing:-3px;min-height:1.2em;margin-top:-4px;padding-bottom:4px;overflow:hidden;white-space:nowrap}
 .play-cta{margin-top:18px}
 .play-cta .nudge{text-align:center;font-size:.85rem;color:var(--soft);margin-bottom:10px}
 
 /* =====================  3. REVEAL  ===================== */
-#reveal{background:radial-gradient(120% 80% at 50% 0%,#145A84 0%,var(--deep) 55%,var(--deep-2) 100%);color:#fff;text-align:center}
-#reveal .eyebrow{font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.75rem;color:var(--foam)}
-#reveal h2{font-size:clamp(1.8rem,7.5vw,2.4rem);margin:8px 0 26px}
+#reveal{text-align:center}
+.eyebrow{font-weight:800;letter-spacing:.2em;text-transform:uppercase;font-size:.72rem}
+#reveal .eyebrow{color:var(--lime)}
+#reveal h2{font-size:clamp(2rem,8vw,2.6rem);margin:8px 0 26px}
 .duel{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:end;height:270px;margin-bottom:22px}
 .col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
-.col .num{font-family:"Baloo 2";font-weight:800;font-size:2rem;line-height:1;margin-bottom:8px;font-variant-numeric:tabular-nums}
-.col .num small{font-size:.9rem;opacity:.75}
+.col .num{font-family:var(--serif);font-size:2.3rem;line-height:1;margin-bottom:8px;font-variant-numeric:tabular-nums}
+.col .num small{font-family:var(--sans);font-size:.85rem;font-weight:700;opacity:.75}
 .bar-box{width:76%;max-width:120px;height:190px;position:relative;border-radius:16px 16px 10px 10px;background:rgba(255,255,255,.08);overflow:hidden}
 .bar{position:absolute;inset:0;border-radius:16px 16px 10px 10px;transform-origin:bottom;transform:scaleY(0);transition:transform 1.1s cubic-bezier(.2,.9,.25,1)}
-.bar.you{background:linear-gradient(180deg,#B9C9D6,#7F98AB)}
-.bar.real{background:linear-gradient(180deg,var(--foam),var(--water));transition-delay:.55s}
-.col .who{margin-top:10px;font-weight:800;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;opacity:.85}
-.verdict{font-size:1.08rem;line-height:1.5;margin-bottom:26px;opacity:0;transform:translateY(10px);transition:opacity .6s ease 1.5s,transform .6s ease 1.5s}
-.verdict b{color:var(--sun)}
+.bar.you{background:linear-gradient(180deg,#D8D0EA,#9A8DC0)}
+.bar.real{background:linear-gradient(180deg,var(--cyan),var(--blue) 60%,var(--purple));transition-delay:.55s}
+.col .who{margin-top:10px;font-weight:800;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.verdict{font-size:1.05rem;line-height:1.55;margin-bottom:26px;opacity:0;transform:translateY(10px);transition:opacity .6s ease 1.5s,transform .6s ease 1.5s}
+.verdict b{color:var(--lime)}
 .go .verdict{opacity:1;transform:none}
 
 /* =====================  4. REPORT CARD  ===================== */
-#report{background:var(--sky)}
 .card{
   position:relative;overflow:hidden;
-  border-radius:28px;padding:24px 22px 20px;color:#fff;
-  background:linear-gradient(160deg,#145A84 0%,var(--deep) 55%,var(--deep-2) 100%);
-  box-shadow:0 26px 50px -24px rgba(7,42,64,.75);
+  border-radius:28px;padding:22px 22px 18px;color:#fff;
+  background:linear-gradient(160deg,#5B45A3 0%,var(--indigo) 55%,var(--indigo-2) 100%);
+  box-shadow:0 26px 50px -24px rgba(35,26,82,.75);
 }
-.card::before{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(closest-side,rgba(158,224,255,.28),transparent)}
+.card::before{ /* ripple */
+  content:"";position:absolute;right:-90px;top:-90px;width:260px;height:260px;border-radius:50%;
+  background:repeating-radial-gradient(circle,transparent 0 16px,rgba(255,255,255,.07) 17px 18px,transparent 19px 34px);
+}
 .card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;position:relative}
-.card-head .t{font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--foam)}
-.card-head h2{font-size:1.75rem;margin-top:4px}
+.card-head .t{font-size:.68rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--lime)}
+.card-head h2{font-size:1.95rem;margin-top:6px}
 .grade{
   flex:none;width:84px;height:84px;border-radius:22px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:var(--sun);color:var(--ink);transform:rotate(6deg);
-  box-shadow:0 8px 0 rgba(0,0,0,.18);
+  background:var(--lime);color:var(--indigo-2);transform:rotate(6deg);
+  box-shadow:0 8px 0 rgba(0,0,0,.2);
 }
-.grade b{font-family:"Baloo 2";font-size:3rem;line-height:.9}
-.grade span{font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.grade b{font-family:var(--serif);font-weight:400;font-size:3.1rem;line-height:.9}
+.grade span{font-size:.58rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
 .grade.pop{animation:stamp .6s cubic-bezier(.3,1.7,.5,1) .2s both}
 @keyframes stamp{from{transform:rotate(-20deg) scale(2.2);opacity:0}to{transform:rotate(6deg) scale(1);opacity:1}}
 .card-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 16px;position:relative}
 .cs{background:rgba(255,255,255,.1);border-radius:16px;padding:12px}
-.cs .v{font-family:"Baloo 2";font-weight:800;font-size:1.5rem;line-height:1.05;font-variant-numeric:tabular-nums}
-.cs .k{font-size:.74rem;opacity:.8;font-weight:700;margin-top:2px}
+.cs .v{font-family:var(--serif);font-size:1.6rem;line-height:1.05;font-variant-numeric:tabular-nums}
+.cs .k{font-size:.74rem;opacity:.8;font-weight:700;margin-top:3px}
 .cs.wide{grid-column:1/-1;display:flex;align-items:center;gap:12px}
-.cs.wide .v{font-size:1.15rem}
+.cs.wide .v{font-size:1.3rem}
 .dyk{position:relative;display:flex;flex-direction:column;gap:10px}
-.dyk p{font-size:.92rem;line-height:1.45;padding-left:30px;position:relative}
-.dyk p::before{content:"💡";position:absolute;left:0;top:0}
-.dyk .head{padding-left:0;font-weight:800;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--foam)}
+.dyk p{font-size:.9rem;line-height:1.5;padding-left:22px;position:relative}
+.dyk p::before{ /* lime hexagon, from the logo */
+  content:"";position:absolute;left:0;top:.38em;width:11px;height:10px;background:var(--lime);
+  clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
+}
+.dyk p:last-child::before{background:var(--cyan)}
+.dyk .head{padding-left:0;font-weight:800;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--lime)}
 .dyk .head::before{content:none}
-.card-foot{margin-top:18px;padding-top:12px;border-top:1px dashed rgba(255,255,255,.25);display:flex;justify-content:space-between;font-size:.72rem;opacity:.7;position:relative}
+.card-foot{margin-top:18px;padding-top:12px;border-top:1px dashed rgba(255,255,255,.25);display:flex;justify-content:space-between;align-items:center;font-size:.72rem;position:relative}
+.card-foot span{opacity:.7}
+.card-foot img{height:36px;width:auto;display:block}
 .share-row{display:flex;flex-direction:column;gap:12px;margin-top:20px}
-.fine{font-size:.74rem;color:var(--soft);line-height:1.45;margin-top:14px;text-align:center}
+.fine{font-size:.74rem;color:var(--soft);line-height:1.5;margin-top:14px;text-align:center}
 
 /* =====================  5. CTA + LEAD FORM  ===================== */
-#cta{background:#fff;justify-content:flex-start;padding-top:40px}
-#cta h2{font-size:clamp(1.8rem,7.5vw,2.3rem);color:var(--deep)}
-#cta .lede{color:var(--soft);font-size:1.02rem;line-height:1.5;margin:10px 0 18px}
-.perks{list-style:none;padding:0;margin:0 0 22px;display:flex;flex-direction:column;gap:8px}
-.perks li{display:flex;gap:10px;align-items:flex-start;font-weight:700;font-size:.95rem}
-.perks li::before{content:"✓";flex:none;width:22px;height:22px;border-radius:50%;background:var(--mint);color:#fff;font-size:.8rem;display:flex;align-items:center;justify-content:center;margin-top:1px}
+#cta{justify-content:flex-start;padding-top:32px}
+#cta h2{font-size:clamp(2rem,8vw,2.5rem);color:var(--purple)}
+#cta h2 em{font-style:italic}
+#cta .lede{color:var(--soft);font-size:1rem;line-height:1.55;margin:12px 0 18px}
+.perks{list-style:none;padding:0;margin:0 0 22px;display:flex;flex-direction:column;gap:10px}
+.perks li{display:flex;gap:12px;align-items:flex-start;font-weight:700;font-size:.93rem}
+.perks li::before{content:"";flex:none;width:9px;height:9px;border-radius:50%;background:var(--purple);margin-top:.45em;box-shadow:0 0 0 4px var(--lav)}
 .field{display:block;margin-bottom:14px}
 .field span{display:block;font-weight:800;font-size:.85rem;margin-bottom:6px}
 .field input{
   width:100%;font:inherit;font-size:1.05rem;padding:14px 16px;border-radius:14px;
-  border:2px solid var(--line);background:var(--sky);color:var(--ink);
+  border:2px solid var(--line);background:var(--card);color:var(--ink);
   transition:border-color .15s ease;
 }
-.field input:focus{outline:none;border-color:var(--water);background:#fff}
-.field.bad input{border-color:var(--coral)}
-.field .err{display:none;color:#C23B2C;font-size:.8rem;font-weight:700;margin-top:5px}
+.field input:focus{outline:none;border-color:var(--purple)}
+.field.bad input{border-color:var(--error)}
+.field .err{display:none;color:var(--error);font-size:.8rem;font-weight:700;margin-top:5px}
 .field.bad .err{display:block}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{
-  border:2px solid var(--line);background:#fff;border-radius:99px;padding:9px 14px;
+  border:2px solid var(--line);background:var(--card);border-radius:99px;padding:9px 16px;
   font-weight:800;font-size:.9rem;cursor:pointer;transition:all .15s ease;
 }
-.chip[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:#fff}
-.send-err{color:#C23B2C;font-weight:700;font-size:.85rem;text-align:center;margin-top:12px}
+.chip[aria-pressed=true]{background:var(--purple);border-color:var(--purple);color:#fff}
+.chip:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+.send-err{color:var(--error);font-weight:700;font-size:.85rem;text-align:center;margin-top:12px}
 .consent{font-size:.78rem;color:var(--soft);line-height:1.45;margin:4px 0 18px}
+.contact{text-align:center;font-size:.82rem;color:var(--soft);margin-top:16px}
+.contact b{color:var(--purple);user-select:all}
 .thanks{display:none;text-align:center;padding:30px 0}
-.thanks .big{font-size:3.4rem}
-.thanks h3{font-size:1.7rem;color:var(--deep);margin:8px 0}
-.thanks p{color:var(--soft);line-height:1.5}
+.thanks img{height:70px;width:auto}
+.thanks h3{font-size:2rem;color:var(--purple);margin:12px 0 8px}
+.thanks p{color:var(--soft);line-height:1.55}
 .done .thanks{display:block}
 .done form{display:none}
 
 .back{background:none;border:0;color:var(--soft);font-weight:800;font-size:.85rem;padding:10px;margin-top:10px;cursor:pointer;width:100%}
+.dark .back{color:rgba(255,255,255,.7)}
 
 @media (min-width:720px){
   .screen{padding-top:48px}
@@ -305,13 +361,15 @@ input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--su
 <body>
 
 <!-- ============ 1. GUESS ============ -->
-<section class="screen on" id="guess" aria-labelledby="guess-title">
+<section class="screen dark on" id="guess" aria-labelledby="guess-title">
   <div class="inner">
+    <div class="brand lockup"><img src="hydron-logo-white.png" alt="Hydron" width="480" height="252" /></div>
     <h1 id="guess-title">How much water do you think your RO wastes every day?</h1>
 
     <div class="guess-drop" aria-hidden="true">
       <svg viewBox="0 0 100 100" id="guessDropSvg">
-        <path d="M50 4 C50 4 16 44 16 64 a34 34 0 0 0 68 0 C84 44 50 4 50 4Z" fill="#9EE0FF"/>
+        <defs><linearGradient id="dropG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#48AACF"/><stop offset=".55" stop-color="#2E8AC9"/><stop offset="1" stop-color="#654C9E"/></linearGradient></defs>
+        <path d="M50 4 C50 4 16 44 16 64 a34 34 0 0 0 68 0 C84 44 50 4 50 4Z" fill="url(#dropG)"/>
         <path d="M32 62 a18 18 0 0 0 12 18" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
       </svg>
       <div class="guess-num"><span id="guessVal">10</span><small>litres / day</small></div>
@@ -326,10 +384,11 @@ input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--su
 </section>
 
 <!-- ============ 2. PLAYGROUND ============ -->
-<section class="screen" id="play" aria-labelledby="play-title">
+<section class="screen paper" id="play" aria-labelledby="play-title">
   <div class="inner">
     <div class="play-head">
-      <h2 id="play-title">Drag the sliders, watch the tank 👇</h2>
+      <img src="hydron-logo.png" alt="Hydron" width="480" height="252" />
+      <h2 id="play-title">Drag the sliders, watch the tank</h2>
     </div>
 
     <div class="stage">
@@ -338,8 +397,8 @@ input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--su
         <div class="drips" id="drips"><i class="drip"></i><i class="drip"></i><i class="drip"></i></div>
         <div class="tank">
           <div class="water" id="water">
-            <div class="wave back"><svg viewBox="0 0 120 16" preserveAspectRatio="none"><path d="M0 8 Q15 0 30 8 T60 8 T90 8 T120 8 V16 H0Z" fill="#1E8FCB"/></svg><svg viewBox="0 0 120 16" preserveAspectRatio="none"><path d="M0 8 Q15 0 30 8 T60 8 T90 8 T120 8 V16 H0Z" fill="#1E8FCB"/></svg></div>
-            <div class="wave"><svg viewBox="0 0 120 16" preserveAspectRatio="none"><path d="M0 8 Q15 16 30 8 T60 8 T90 8 T120 8 V16 H0Z" fill="#2BA8E0"/></svg><svg viewBox="0 0 120 16" preserveAspectRatio="none"><path d="M0 8 Q15 16 30 8 T60 8 T90 8 T120 8 V16 H0Z" fill="#2BA8E0"/></svg></div>
+            <div class="wave back"><svg viewBox="0 0 120 16" preserveAspectRatio="none"><path d="M0 8 Q15 0 30 8 T60 8 T90 8 T120 8 V16 H0Z" fill="#3A9AD0"/></svg><svg viewBox="0 0 120 16" preserveAspectRatio="none"><path d="M0 8 Q15 0 30 8 T60 8 T90 8 T120 8 V16 H0Z" fill="#3A9AD0"/></svg></div>
+            <div class="wave"><svg viewBox="0 0 120 16" preserveAspectRatio="none"><path d="M0 8 Q15 16 30 8 T60 8 T90 8 T120 8 V16 H0Z" fill="#48AACF"/></svg><svg viewBox="0 0 120 16" preserveAspectRatio="none"><path d="M0 8 Q15 16 30 8 T60 8 T90 8 T120 8 V16 H0Z" fill="#48AACF"/></svg></div>
             <div class="water-body"></div>
             <i class="bubble"></i><i class="bubble"></i><i class="bubble"></i><i class="bubble"></i>
           </div>
@@ -351,7 +410,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--su
       <div class="side">
         <div class="stat">
           <div class="k">Down the drain</div>
-          <div class="v"><span id="dailyL">0</span> L<span style="font-size:.9rem;opacity:.6">/day</span></div>
+          <div class="v"><span id="dailyL">0</span> L<span class="unit">/day</span></div>
         </div>
         <div class="stat money">
           <div class="k">Upkeep spent</div>
@@ -370,7 +429,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--su
         <div class="faces" id="faces" aria-hidden="true"></div>
       </div>
       <div class="ctl">
-        <div class="ctl-top"><label for="perPerson">Drinking + cooking water <span style="font-weight:600;font-size:.78rem;color:var(--soft)">per person/day</span></label><output id="perOut">4 L</output></div>
+        <div class="ctl-top"><label for="perPerson">Drinking + cooking water <span>per person/day</span></label><output id="perOut">4 L</output></div>
         <input type="range" id="perPerson" min="1" max="10" step="0.5" value="4" />
       </div>
       <div class="ctl">
@@ -387,7 +446,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--su
 </section>
 
 <!-- ============ 3. REVEAL ============ -->
-<section class="screen" id="reveal" aria-labelledby="reveal-title">
+<section class="screen dark" id="reveal" aria-labelledby="reveal-title">
   <div class="inner">
     <div class="eyebrow">The big reveal</div>
     <h2 id="reveal-title">Your guess vs. your RO</h2>
@@ -410,7 +469,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--su
 </section>
 
 <!-- ============ 4. REPORT CARD ============ -->
-<section class="screen" id="report" aria-labelledby="card-title">
+<section class="screen paper" id="report" aria-labelledby="card-title">
   <div class="inner">
     <div class="card" id="card">
       <div class="card-head">
@@ -430,7 +489,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--su
         <p id="dyk1"></p>
         <p>RO removes most dissolved minerals along with impurities. Do you know your tap water's TDS, and whether it actually needs to come down that far?</p>
       </div>
-      <div class="card-foot"><span id="cDate"></span><span>RO Water Check</span></div>
+      <div class="card-foot"><span id="cDate"></span><img src="hydron-logo-white.png" alt="Hydron" width="480" height="252" /></div>
     </div>
 
     <div class="share-row">
@@ -440,17 +499,18 @@ input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--su
       </a>
       <button class="btn" id="toCta">Get a free home water check →</button>
     </div>
-    <p class="fine">Estimates assume a typical home RO that drains about 3 litres for every litre it purifies, and average Indian service prices. Your purifier may differ.</p>
+    <p class="fine">By Hydron, Functional Hydration. Estimates assume a typical home RO that drains about 3 litres for every litre it purifies, and average Indian service prices. Your purifier may differ.</p>
     <button class="back" data-go="play">← Change my numbers</button>
   </div>
 </section>
 
 <!-- ============ 5. CTA + LEAD FORM ============ -->
-<section class="screen" id="cta" aria-labelledby="cta-title">
+<section class="screen paper" id="cta" aria-labelledby="cta-title">
   <div class="inner" id="ctaInner">
     <form id="leadForm" novalidate>
+      <div class="brand sm" style="justify-content:flex-start"><img src="hydron-logo.png" alt="Hydron" width="480" height="252" /></div>
       <h2 id="cta-title">Want the real numbers for <em>your</em> home?</h2>
-      <p class="lede">Book a free home water assessment. We'll test your tap water's TDS and check how your purifier is doing. Takes about 20 minutes.</p>
+      <p class="lede">Book a free Hydron home water assessment. We'll test your tap water's TDS and check how your purifier is doing. Takes about 20 minutes.</p>
       <ul class="perks">
         <li>Free TDS test of your tap and RO water</li>
         <li>Check of your RO's waste and filter condition</li>
@@ -486,11 +546,12 @@ input[type=range]:focus-visible::-webkit-slider-thumb{outline:3px solid var(--su
     </form>
 
     <div class="thanks" role="status">
-      <div class="big">💧</div>
+      <img src="hydron-mark.png" alt="" width="160" height="122" />
       <h3>You're booked in!</h3>
       <p>We'll call you shortly to confirm a time. Meanwhile, why not dare a friend to guess their RO's number?</p>
       <div style="margin-top:20px"><a class="btn wa" id="shareWa2" href="https://wa.me/" target="_blank" rel="noopener">Challenge a friend on WhatsApp</a></div>
     </div>
+    <p class="contact">Questions? Write to us at <b>info@hydron.in</b></p>
     <button class="back" data-go="report">← Back to my report card</button>
   </div>
 </section>
@@ -635,7 +696,7 @@ function tick(){
     else shown[key] = target[key];
   }
   waterEl.style.transform = "translate3d(0," + ((1 - shown.level) * 100).toFixed(2) + "%,0)";
-  tankLabel.classList.toggle("dark", shown.level < 0.2);
+  tankLabel.classList.toggle("dark-text", shown.level < 0.2);
   totalEl.textContent = fmt(shown.total) + " L";
   dailyEl.textContent = fmt(shown.daily);
   rupEl.textContent = rs(shown.money);
@@ -770,7 +831,7 @@ function shareMessage(){
   return "💧 My RO wastes about " + fmt(s.wasteDay) + " litres of water every day!\n" +
     "That's " + fmt(s.total) + " litres (" + tankerText(s.tankers) + ") in " + s.years + " " + plural(s.years, "year", "years") +
     ", plus " + rs(s.money) + " on filters and servicing. My RO got a " + s.grade + ".\n\n" +
-    "I guessed " + fmt(guess) + " L. Bet you can't guess yours: " + shareUrl();
+    "I guessed " + fmt(guess) + " L. Bet you can't guess yours (made by Hydron): " + shareUrl();
 }
 function setShareLinks(){
   var url = "https://wa.me/?text=" + encodeURIComponent(shareMessage());
